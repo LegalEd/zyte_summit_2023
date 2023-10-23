@@ -1,6 +1,9 @@
 from ..loaders import ZquadLoader
 from .base_spider import BasicBaseSpider
 
+import json
+import scrapy
+
 
 class ZquadSpider(BasicBaseSpider):
     name = "zquad"
@@ -18,6 +21,21 @@ class ZquadSpider(BasicBaseSpider):
         if not images:
             images = response.css("script:contains('/gen')::text").re("(?<=/gen/)(\w{8}-\w{4}-\w{4}-\w{4}-\w{12}).jpg")
 
-        item.add_value("image_id", images)
-        item.add_css("rating", "#item-data p:contains('Rating') span *::text")
-        yield item.load_item()
+        if images:
+            item.add_value("image_id", images)
+        ratings = response.css("#item-data p:contains('Rating') span *::text").extract_first()
+        if "NO RATING" in ratings:
+            backend_url = response.css("#item-data p:contains('Rating') span::attr(data-price-url)").extract_first()
+            yield scrapy.Request(
+                url=response.urljoin(backend_url), callback=self.get_rating, cb_kwargs={"item": item.load_item()}
+            )
+        else:
+            item.add_value("rating", ratings)
+            yield item.load_item()
+
+    def get_rating(self, response, item):
+        item2 = ZquadLoader(response=response)
+        item2.add_value(None, item)
+        j_dict = json.loads(response.body)
+        item2.add_value("rating", j_dict.get("value"))
+        yield item2.load_item()

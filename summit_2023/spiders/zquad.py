@@ -13,6 +13,11 @@ class ZquadSpider(BasicBaseSpider):
         item = ZquadLoader(response=response)
         item.add_css("item_id", "#item-data p > span#uuid *::text")
         item.add_css("name", "#item-data h2 *::text")
-        item.add_css("image_id", "#item-data .img-shadow img::attr(src)", re=r"gen/(.*)\.jpg")
+        images = response.css(".img-shadow img::attr(src)").re(r"gen/(.*)\.jpg")
+        images = [image for image in images if "thumb" not in image]
+        if not images:
+            images = response.css("script:contains('/gen')::text").re("(?<=/gen/)(\w{8}-\w{4}-\w{4}-\w{4}-\w{12}).jpg")
+
+        item.add_value("image_id", images)
         item.add_css("rating", "#item-data p:contains('Rating') span *::text")
         yield item.load_item()

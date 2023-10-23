@@ -1,0 +1,7 @@
+projects:
+  production: 711071
+  staging: 711110
+stacks:
+  default: scrapy:2.11
+requirements:
+  file: requirements.txt

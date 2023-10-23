@@ -1,0 +1,40 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+env:
+  zyte_env: ${{ fromJSON('["staging", "production"]')[github.ref == 'refs/heads/main'] }}
+
+jobs:
+  deploy:
+    name: Deploy to Zyte
+    
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.11.4
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11.4"
+      
+      - name: Install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.6.1
+  
+      - name: Deploy to shub
+        shell: bash
+        run: |
+          echo -e "apikeys:\n  default: ${{ secrets.SHUB_API_KEY }}" >> ~/.scrapinghub.yml
+          poetry export --without-hashes > requirements.txt
+          python -m venv venv_shub
+          source venv_shub/bin/activate
+          pip install shub
+          shub deploy ${{ env.zyte_env }} >> $GITHUB_STEP_SUMMARY 2>&1
+          rm -rf venv_shub

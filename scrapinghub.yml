@@ -1,6 +1,5 @@
 projects:
-  production: 711071
-  staging: 711110
+  production: 711131
 stacks:
   default: scrapy:2.11
 requirements:

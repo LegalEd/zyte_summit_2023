@@ -9,13 +9,15 @@ class ZquadSpider(BasicBaseSpider):
     name = "zquad"
     allowed_domains = ["run.app"]
     start_urls = ("https://web-5umjfyjn4a-ew.a.run.app/clickhere",)
-    listing_urls_css_text = "#gtco-practice-areas .gtco-practice-area-item .gtco-copy a::attr(href)"
-    next_page_css_text = "a:contains('Next Page >')::attr(href)"
+    listing_urls_css_text = ".gtco-practice-area-item .gtco-copy a::attr(href)"
+    next_page_css_text = "a:contains('Next Page')::attr(href)"
 
     def get_data(self, response):
+        recommended_links = response.css(".team-item a")
+        yield from response.follow_all(recommended_links, self.get_data)
         item = ZquadLoader(response=response)
-        item.add_css("item_id", "#item-data p > span#uuid *::text")
-        item.add_css("name", "#item-data h2 *::text")
+        item.add_css("item_id", "#uuid *::text")
+        item.add_css("name", "h2.heading-colored::text")
         images = response.css(".img-shadow img::attr(src)").re(r"gen/(.*)\.jpg")
         images = [image for image in images if "thumb" not in image]
         if not images:

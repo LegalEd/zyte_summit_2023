@@ -10,6 +10,4 @@ from itemadapter import ItemAdapter
 
 class Summit2023Pipeline:
     def process_item(self, item, spider):
-        if "image_id" not in item:
-            item["image_id"] = None
         return item

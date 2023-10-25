@@ -20,5 +20,5 @@ def string_strip(s):
 
 class ZquadLoader(ItemLoader):
     default_item_class = ZquadItem
-    default_input_processor = MapCompose(remove_white_space, string_strip, filter_empty)
-    default_output_processor = Join()
+    default_input_processor = MapCompose(filter_empty)
+    default_output_processor = TakeFirst()

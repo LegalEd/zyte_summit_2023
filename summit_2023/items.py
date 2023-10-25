@@ -10,6 +10,5 @@ class ZquadItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     item_id = scrapy.Field()  # UUID Validation
-    name = scrapy.Field()  # Strip spaces
-    image_id = scrapy.Field()  # UUID Validation
-    rating = scrapy.Field()  # Strip spaces
+    text = scrapy.Field()  # Strip spaces
+    stock = scrapy.Field()

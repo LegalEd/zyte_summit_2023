@@ -5,8 +5,8 @@ import json
 import scrapy
 
 
-class ZquadSpider(BasicBaseSpider):
-    name = "zquad"
+class Spider2Spider(BasicBaseSpider):
+    name = "spider2"
     allowed_domains = ["run.app"]
     start_urls = ("https://web-5umjfyjn4a-ew.a.run.app/clickhere",)
     listing_urls_css_text = ".gtco-practice-area-item .gtco-copy a::attr(href)"

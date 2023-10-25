@@ -19,5 +19,5 @@ class Spider2Spider(BasicBaseSpider):
         item.add_css("text", "h2.heading-colored::text")
         stock = response.css(".stock *::text").extract_first()
         stock = w2n.word_to_num(stock)
-        # item.add_value("stock", stock)
+        item.add_value("stock", stock)
         yield item.load_item()
